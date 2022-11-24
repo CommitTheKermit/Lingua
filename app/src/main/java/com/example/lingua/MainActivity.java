@@ -44,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
     ActionBar actionBar;
     Button  btnPreviousLine, btnNextLine, btnInsert;
     TextView txtOriginalText, txtTranslatedText, txtTitle, txtPapago;
-//    HorizontalScrollView scrollButtons;
-    TextView tvWordDefinitions;
+    LinearLayout scrollButtons;
+//    TextView tvWordDefinitions;
     int index = 0;
     ArrayList<String> sentences;
     HashSet<String> stopWordSet = new HashSet<>();
@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     public static Context context;
     static String resultWord;
     static String originalWord;
+
+    ArrayList<Button> buttonArrayList = new ArrayList<>();
 
 
     @Override
@@ -77,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
         txtTranslatedText = (TextView) findViewById(R.id.txtTranslatedText);
         txtTitle = (TextView) findViewById(R.id.txtTitle);
         txtPapago = (TextView) findViewById(R.id.txtPapago);
-        tvWordDefinitions = (TextView) findViewById(R.id.tvWordDefinitions);
+        scrollButtons = (LinearLayout) findViewById(R.id.scrollButtons);
+//        tvWordDefinitions = (TextView) findViewById(R.id.tvWordDefinitions);
 
         btnPreviousLine.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 String originalSentence = sentences.get(index) + ".";
                 txtOriginalText.setText(originalSentence);
                 Log.d("kermit",originalSentence + "   index : " + index);
-                tvWordDefinitions.setText("");
+//                tvWordDefinitions.setText("");
                 new Thread(){
                     @Override
                     public void run() {
