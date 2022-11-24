@@ -37,7 +37,8 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/bottomBorder">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -63,7 +64,8 @@
             android:textSize="25dp"
             android:inputType="textMultiLine"
             android:lines="3"
-            android:maxLines="5" />
+            android:maxLines="5"
+            android:background="@drawable/customborder"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,6 +100,7 @@
 
 
         <ScrollView
+            android:background="@drawable/bottomBorder"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_weight="1">
@@ -120,7 +123,8 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:background="@drawable/bottomBorder">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -135,6 +139,18 @@
             </LinearLayout>
 
         </ScrollView>
+<!--        단어를 버튼에 연결해서 대화상자로 표시하기 미래에 해보기-->
+<!--        <HorizontalScrollView-->
+<!--            android:id="@+id/scrollButtons"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="80dp"-->
+<!--            android:background="@drawable/customborder">-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:orientation="horizontal">-->
+<!--            </LinearLayout>-->
+<!--        </HorizontalScrollView>-->
 
 
 

@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
 //    TextView txtRead;
 //    ImageButton btnMenu;
     ActionBar actionBar;
-//    String[] sentences;
     Button  btnPreviousLine, btnNextLine, btnInsert;
     TextView txtOriginalText, txtTranslatedText, txtTitle, txtPapago;
+//    HorizontalScrollView scrollButtons;
     TextView tvWordDefinitions;
     int index = 0;
     ArrayList<String> sentences;
@@ -60,17 +61,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
-//
-//        String urlFirst = "https://krdict.korean.go.kr/api/search?certkey_no=4598&key=";
-//        String key = "D748094E471E20B49DBAE26AAA7EB3B6";
-//        String urlSecond = "&type_search=search&part=word&q=";
-////        String targetWord;
-//        String urlThird = "&sort=dict";
-
-        String urlFirst = "https://api.dictionaryapi.dev/api/v2/entries/en/";
-        String targetWord;
-
-
 
         mHandler = new Handler() ;
 
@@ -137,46 +127,15 @@ public class MainActivity extends AppCompatActivity {
                         continue;
                     }
 
-//                    String url = urlFirst + key + urlSecond + resultWord + urlThird;
                     // AsyncTask를 통해 HttpURLConnection 수행.
-                    String url = urlFirst + originalWord;
-                    NetworkTask networkTask = new NetworkTask(url,originalWord);
+                    NetworkTask networkTask = new NetworkTask(originalWord);
                     networkTask.execute();
 
                 }
-
-
-
-
-
-//                networkTask.getDefinitions();
-
-
             }
         });
 
-//        final Runnable runnable = new Runnable() {
-//            @Override
-//            public void run() {
-//
-//            }
-//        }
 
-//        class NewRunnable implements Runnable {
-//            @Override
-//            public void run() {
-//                while (true) {
-//
-//                    try {
-//                        Thread.sleep(3000);
-//                    } catch (Exception e) {
-//                        e.printStackTrace() ;
-//                    }
-//
-//                    mHandler.post(runnable) ;
-//                }
-//            }
-//        }
     }
 
 //    @Override
@@ -213,10 +172,6 @@ public class MainActivity extends AppCompatActivity {
                 stopWordSet.add(scanStop.next());
             }
 
-////            for(int i = 0; i < 100;i++){
-////                if(sentences[i].length() < 3) continue;
-////                Log.d("kermit",sentences[i].trim() + "   length : " + sentences[i].length());
-////            }
             String temp;
             for(int i = 0; i < 100; i++){
                 if(sentences.get(i).length() == 0){

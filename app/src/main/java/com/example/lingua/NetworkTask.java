@@ -14,11 +14,9 @@ import java.util.Arrays;
 
 public class NetworkTask extends AsyncTask<Void, Void, String> {
 
-    private String url;
     private String originalWord;
 
-    public NetworkTask(String url, String word) {
-        this.url = url;
+    public NetworkTask(String word) {
         this.originalWord = word;
     }
 
@@ -29,7 +27,7 @@ public class NetworkTask extends AsyncTask<Void, Void, String> {
 //        RequestHttpURLConnection requestHttpURLConnection = new RequestHttpURLConnection();
 //        result = requestHttpURLConnection.request(url); // 해당 URL로 부터 결과물을 얻어온다.
         Oxford requestOxford = new Oxford();
-        result = requestOxford.request();
+        result = requestOxford.request(this.originalWord);
         return result;
     }
 
@@ -50,14 +48,15 @@ public class NetworkTask extends AsyncTask<Void, Void, String> {
             }
 
             String tempDef;
+            String defs = "";
             tempDef = ((MainActivity) MainActivity.context).tvWordDefinitions.getText().toString();
             for (int i = 1; i < 3 && i < definitions.size(); i++) {
-                tempDef += " " + definitions.get(i);
+                defs += definitions.get(i) + ", ";
             }
-            Log.d("kermit", "in networkTask tempDef : " + tempDef);
-
-            String set = this.originalWord + " : " + tempDef + "\n\n";
-            ((MainActivity) MainActivity.context).tvWordDefinitions.setText(set);
+            String trimmed = defs.trim();
+            trimmed = trimmed.substring(0,trimmed.length() - 1);
+            String set = this.originalWord + " : " + trimmed  + ".\n\n";
+            ((MainActivity) MainActivity.context).tvWordDefinitions.setText(tempDef + set);
             //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
         }
     }

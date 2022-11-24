@@ -8,9 +8,9 @@ import  java.net.URL;
 
 public class Oxford {
 
-    String request(){
+    String request(String originalWord){
         final String language = "en-gb";
-        final String word = "Ace";
+        final String word = originalWord;
         final String fields = "definitions";
         final String word_id = word.toLowerCase();
         final String restUrl = "https://od-api.oxforddictionaries.com:443/api/v2/words/" + language + "?q=" + word_id + "&" + "fields=" + fields;
@@ -35,7 +35,7 @@ public class Oxford {
             System.out.println(stringBuilder.toString());
             return stringBuilder.toString();
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return "no receive";
         }
 
