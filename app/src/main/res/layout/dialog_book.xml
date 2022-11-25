@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_gravity="left"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="sample Title"
+        android:textSize="40dp"
+        android:textColor="@color/black"
+        android:layout_margin="15dp"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tvDialogTitle"
+        android:layout_above="@id/linearButtonBar"
+        android:background="@drawable/bottomborder">
+        <TextView
+            android:id="@+id/tvContent"
+            android:layout_gravity="left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sampleContext"
+            android:textSize="25dp"
+            android:layout_margin="15dp"/>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearButtonBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        >
+
+        <Button
+            android:id="@+id/btnPrevPage"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="15dp"
+            android:backgroundTint="@color/white"
+            android:textColor="#F49349"
+            android:text="이전" />
+        <Button
+            android:id="@+id/btnNextPage"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="100dp"
+            android:backgroundTint="@color/white"
+            android:textColor="#F49349"
+            android:text="다음"/>
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/white"
+            android:textColor="#F49349"
+            android:text="확인"/>
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>
