@@ -3,6 +3,7 @@ package com.example.lingua;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -69,7 +70,8 @@ public class NetworkTask extends AsyncTask<Void, Void, String> {
 
             buttonView.setId(count++);
             buttonView.setText(originalWord);
-            buttonView.setBackgroundColor(Color.parseColor("#F49349"));
+            buttonView.setBackgroundResource(R.drawable.buttn_design);
+//            buttonView.setBackgroundColor(Color.parseColor("#F49349"));
             buttonView.setLayoutParams(new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
             ((MainActivity) MainActivity.context).scrollButtons.addView(buttonView);
