@@ -31,7 +31,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:text="제목 입력칸"
-                android:textSize="30dp"/>
+                android:textSize="30dp"
+                android:textColor="@color/black"/>
             <ImageButton
                 android:id="@+id/btnBook"
                 android:layout_width="50dp"
@@ -127,37 +128,38 @@
         </ScrollView>
 
 
-<!--        <ScrollView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="30dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="@drawable/bottomborder">-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:orientation="vertical">-->
-<!--                <TextView-->
-<!--                    android:id="@+id/tvWordDefinitions"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:hint="단어 설명"-->
-<!--                    android:textSize="23dp"/>-->
-<!--            </LinearLayout>-->
-
-<!--        </ScrollView>-->
-<!--        단어를 버튼에 연결해서 대화상자로 표시하기 미래에 해보기-->
-        <HorizontalScrollView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@drawable/customborder">
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@drawable/bottomborder">
             <LinearLayout
-                android:id="@+id/scrollButtons"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tvWordDefinitions"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:hint="단어 설명"
+                    android:textSize="23dp"
+                    />
             </LinearLayout>
-        </HorizontalScrollView>
+
+        </ScrollView>
+<!--        단어를 버튼에 연결해서 대화상자로 표시하기 미래에 해보기-->
+<!--        <HorizontalScrollView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="80dp"-->
+<!--            android:background="@drawable/customborder">-->
+<!--            <LinearLayout-->
+<!--                android:id="@+id/scrollButtons"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:orientation="horizontal">-->
+<!--            </LinearLayout>-->
+<!--        </HorizontalScrollView>-->
 
 
 

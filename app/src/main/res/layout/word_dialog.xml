@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvWordTitle"
+        android:layout_gravity="left"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="sample Title"
+        android:textSize="40dp"
+        android:textColor="@color/black"
+        android:layout_margin="15dp"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tvWordTitle"
+        android:layout_above="@id/linearWordButtonBar"
+        android:background="@drawable/bottomborder">
+        <TextView
+            android:id="@+id/tvWordContent"
+            android:layout_gravity="left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sampleContext"
+            android:textSize="25dp"
+            android:layout_margin="15dp"/>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearWordButtonBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        >
+
+        <Button
+            android:id="@+id/btnWordTranslate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginRight="190dp"
+            android:backgroundTint="@color/white"
+            android:textColor="#F49349"
+            android:text="번역하기" />
+
+        <Button
+            android:id="@+id/btnWordConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/white"
+            android:textColor="#F49349"
+            android:text="확인"/>
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

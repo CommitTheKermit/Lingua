@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -63,12 +64,15 @@ public class MainActivity extends AppCompatActivity {
     ActionBar actionBar;
     Button  btnPreviousLine, btnNextLine, btnInsert;
     Button itemReadFile, itemWriteFile;
-    TextView txtOriginalText, txtTitle, txtPapago;
+    TextView txtOriginalText;
+    TextView txtTitle;
+    static TextView txtPapago;
     EditText etTranslatedText;
-    LinearLayout scrollButtons;
+//    HorizontalScrollView scrollButtons;
     Dialog dialogView;
+    Dialog wordDialogView;
 
-//    TextView tvWordDefinitions;
+    TextView tvWordDefinitions;
     int index = 0;
     int indexForDialog = 0;
     ArrayList<String> sentences;
@@ -83,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     String[] resultWords;
 
     ArrayList<Button> buttonArrayList = new ArrayList<>();
+
 
 
     @Override
@@ -150,7 +155,8 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d("kermit",sentences.get(i).trim() + "   length : " + sentences.get(i).length());
 
 
-
+                    in.close();
+                    inStopWord.close();
                 }
                 catch (IOException e) {
                     Log.d("kermit",e.getMessage());
@@ -159,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.itemWriteFile:
                 try {
                     LocalTime now = LocalTime.now();
-                    System.out.println(now);  // 06:20:57.008731300
+                    System.out.println(now);
                     DateTimeFormatter format = DateTimeFormatter.ofPattern("hh시 mm분 ss초");
                     String formattedNow = now.format(format);
 
@@ -206,10 +212,8 @@ public class MainActivity extends AppCompatActivity {
         etTranslatedText = (EditText) findViewById(R.id.etTranslatedText);
         txtTitle = (TextView) findViewById(R.id.txtTitle);
         txtPapago = (TextView) findViewById(R.id.txtPapago);
-        scrollButtons = (LinearLayout) findViewById(R.id.scrollButtons);
-//        tvWordDefinitions = (TextView) findViewById(R.id.tvWordDefinitions);
-//        dialogView = (View) View.inflate(MainActivity.this,
-//                R.layout.dialog_book, null) ;
+//        scrollButtons = (LinearLayout) findViewById(R.id.scrollButtons);
+        tvWordDefinitions = (TextView) findViewById(R.id.tvWordDefinitions);
 
         dialogView = new Dialog(MainActivity.this);       // Dialog 초기화
         dialogView.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
@@ -332,28 +336,29 @@ public class MainActivity extends AppCompatActivity {
 
                 if(resultWords[index] != null)
                     etTranslatedText.setText(resultWords[index]);
+                tvWordDefinitions.setText("");
 
-                //파파고 번역부분 start();까지 주석처리하면 번역기능 정지
-//                new Thread(){
-//                    @Override
-//                    public void run() {
-//
-//                        Papago papago = new Papago();
-//                        String resultSentence;
-//
-//                        resultSentence= papago.getTranslation(originalSentence,"en","ko");
-//
-//                        Bundle papagoBundle = new Bundle();
-//                        Log.d("kermit", "resultSentence" + resultSentence);
-//
-//                        papagoBundle.putString("resultSentence",resultSentence);
-//                        Message msg = papago_handler.obtainMessage();
-//                        msg.setData(papagoBundle);
-//                        papago_handler.sendMessage(msg);
-//
-//                        Log.d("kermit", "msg" + msg);
-//                    }
-//                }.start();
+//                파파고 번역부분 start();까지 주석처리하면 번역기능 정지
+                new Thread(){
+                    @Override
+                    public void run() {
+
+                        Papago papago = new Papago();
+                        String resultSentence;
+
+                        resultSentence= papago.getTranslation(originalSentence,"en","ko");
+
+                        Bundle papagoBundle = new Bundle();
+                        Log.d("kermit", "resultSentence" + resultSentence);
+
+                        papagoBundle.putString("resultSentence",resultSentence);
+                        Message msg = papago_handler.obtainMessage();
+                        msg.setData(papagoBundle);
+                        papago_handler.sendMessage(msg);
+
+                        Log.d("kermit", "msg" + msg);
+                    }
+                }.start();
 
                 for (String token : originalSentence.split("[^a-zA-Z_\\-0-9]+")) {
                     originalWord = token.toLowerCase();
@@ -361,7 +366,6 @@ public class MainActivity extends AppCompatActivity {
                     if(stopWordSet.contains(originalWord) || originalWord.length() == 0){
                         continue;
                     }
-
                     // AsyncTask를 통해 HttpURLConnection 수행.
                     // 단어사전 부분 두줄 지우면 단어사전 정지함
 //                    NetworkTask networkTask = new NetworkTask(originalWord);
@@ -383,29 +387,30 @@ public class MainActivity extends AppCompatActivity {
 
                 if(resultWords[index] != null)
                     etTranslatedText.setText(resultWords[index]);
-//                tvWordDefinitions.setText("");
+                tvWordDefinitions.setText("");
 
-                //파파고 번역부분 start();까지 주석처리하면 번역기능 정지
-//                new Thread(){
-//                    @Override
-//                    public void run() {
-//
-//                        Papago papago = new Papago();
-//                        String resultSentence;
-//
-//                        resultSentence= papago.getTranslation(originalSentence,"en","ko");
-//
-//                        Bundle papagoBundle = new Bundle();
-//                        Log.d("kermit", "resultSentence" + resultSentence);
-//
-//                        papagoBundle.putString("resultSentence",resultSentence);
-//                        Message msg = papago_handler.obtainMessage();
-//                        msg.setData(papagoBundle);
-//                        papago_handler.sendMessage(msg);
-//
-//                        Log.d("kermit", "msg" + msg);
-//                    }
-//                }.start();
+//                파파고 번역부분 start();까지 주석처리하면 번역기능 정지
+                new Thread(){
+                    @Override
+                    public void run() {
+
+                        Papago papago = new Papago();
+                        String resultSentence;
+
+                        resultSentence= papago.getTranslation(originalSentence,"en","ko");
+
+                        Bundle papagoBundle = new Bundle();
+                        Log.d("kermit", "resultSentence" + resultSentence);
+
+
+                        papagoBundle.putString("resultSentence",resultSentence);
+                        Message msg = papago_handler.obtainMessage();
+                        msg.setData(papagoBundle);
+                        papago_handler.sendMessage(msg);
+
+                        Log.d("kermit", "msg" + msg);
+                    }
+                }.start();
 
                 for (String token : originalSentence.split("[^a-zA-Z_\\-0-9]+")) {
                     originalWord = token.toLowerCase();
@@ -414,10 +419,57 @@ public class MainActivity extends AppCompatActivity {
                         continue;
                     }
 
+
+
+//                    wordDialogView = new Dialog(getApplicationContext());
+//
+//                    Button btnWord = new Button(getApplicationContext());
+//                    btnWord.setText(originalWord);
+//                    btnWord.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            wordDialogView = new Dialog(MainActivity.this);       // Dialog 초기화
+//                            wordDialogView.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
+//                            wordDialogView.setContentView(R.layout.word_dialog);
+//
+//                            WindowManager.LayoutParams params = wordDialogView.getWindow().getAttributes();
+//                            params.width = WindowManager.LayoutParams.MATCH_PARENT;
+//                            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+//
+//                            wordDialogView.getWindow().setAttributes(params);
+//                            wordDialogView.show();
+//
+//                            Button btnTWordTranslate, btnWordConfirm;
+//                            TextView tvWordContent, tvWordTitle;
+//                            LinearLayout linearWordButtonBar;
+//
+//                            btnTWordTranslate = (Button) wordDialogView.findViewById(R.id.btnWordTranslate);
+//                            btnWordConfirm = (Button) wordDialogView.findViewById(R.id.btnWordConfirm);
+//
+//                            tvWordTitle = (TextView) wordDialogView.findViewById(R.id.tvWordTitle);
+//                            tvWordContent = (TextView) wordDialogView.findViewById(R.id.tvWordContent);
+//
+//                            linearWordButtonBar = (LinearLayout) wordDialogView.findViewById(R.id.linearWordButtonBar);
+//                            linearWordButtonBar.bringToFront();
+//
+//                            tvWordTitle.setText(originalWord);
+//
+//                            btnWordConfirm.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    wordDialogView.dismiss();
+//                                }
+//                            });
+//                        }
+//                    });
+//                    scrollButtons.addView(btnWord);
+
                     // AsyncTask를 통해 HttpURLConnection 수행.
                     // 단어사전 부분 두줄 지우면 단어사전 정지함
-//                    NetworkTask networkTask = new NetworkTask(originalWord);
-//                    networkTask.execute();
+                    NetworkTask networkTask = new NetworkTask(originalWord);
+                    networkTask.execute();
+
+
 
                 }
             }
@@ -519,7 +571,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //    }
     @SuppressLint("HandlerLeak")
-    Handler papago_handler = new Handler(){
+    static Handler papago_handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             Bundle bundle = msg.getData();
