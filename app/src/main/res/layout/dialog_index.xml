@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="500sp"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_gravity="left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="줄 이동"
+        android:textSize="40dp"
+        android:textColor="@color/black"
+        android:layout_margin="15dp"
+        />
+
+    <LinearLayout
+        android:layout_marginTop="20sp"
+        android:layout_width="350sp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <SeekBar
+            android:id="@+id/seekIndex"
+            android:layout_width="200sp"
+            android:layout_height="50dp"
+            android:progress="0"
+            android:max="100"
+            android:min="0"/>
+
+        <TextView
+            android:id="@+id/tvIndexChange"
+            android:layout_width="150sp"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:text="sampleText"/>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30sp"
+        android:layout_marginBottom="30sp">
+        <EditText
+            android:id="@+id/etIndex"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"/>
+        <Button
+            android:id="@+id/btnIndex"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="GO"
+            android:layout_marginLeft="30sp"
+            android:backgroundTint="#F49349"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvIndexSentence"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SAMPLE TEXT"
+        android:textAlignment="center"
+        android:textSize="25sp"/>
+
+
+
+
+</LinearLayout>

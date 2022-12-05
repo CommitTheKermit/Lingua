@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,6 +35,7 @@ import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -64,6 +66,8 @@ import java.util.Scanner;
 import com.example.lingua.Papago;
 
 public class MainActivity extends AppCompatActivity {
+    Activity main = this;
+
 //    TextView txtRead;
     ImageButton btnMenu, btnBook;
     ActionBar actionBar;
@@ -75,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     EditText etTranslatedText;
 //    HorizontalScrollView scrollButtons;
     Dialog dialogView;
+    Dialog dialogIndexSeek;
 
 
     public static RecyclerView recyclerWords;
@@ -118,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-
             case R.id.itemReadFile:
                 try {
                     InputStream in = getResources().openRawResource(R.raw.brothers_of_snake);
@@ -129,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         Log.d("kermit",e.getMessage());
                     }
-                    sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.?!\n]")));
+                    sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.\n]")));
 
                     InputStream inStopWord = getResources().openRawResource(R.raw.stop);
                     byte[] bytesStopWord = new byte[inStopWord.available()];
@@ -177,6 +181,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.itemWriteFile:
+
+                if(sentences == null){
+                    Toast.makeText(getApplicationContext(),"파일을 열어주세요", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
                 try {
                     LocalTime now = LocalTime.now();
                     System.out.println(now);
@@ -199,6 +209,111 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 break;
+            case R.id.itemIndexSearch:
+                if(sentences == null){
+                    Toast.makeText(getApplicationContext(),"파일을 열어주세요", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                dialogIndexSeek = new Dialog(MainActivity.this);       // Dialog 초기화
+                dialogIndexSeek.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
+                dialogIndexSeek.setContentView(R.layout.dialog_index);
+
+                WindowManager.LayoutParams params = dialogIndexSeek.getWindow().getAttributes();
+                params.width = WindowManager.LayoutParams.MATCH_PARENT;
+                params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+                dialogIndexSeek.getWindow().setAttributes(params);
+                dialogIndexSeek.show();
+
+                Button btnIndex;
+                SeekBar seekIndex;
+                EditText etIndex;
+                TextView tvIndexChange, tvIndexSentence;
+
+                btnIndex = (Button) dialogIndexSeek.findViewById(R.id.btnIndex);
+                seekIndex = (SeekBar) dialogIndexSeek.findViewById(R.id.seekIndex);
+                etIndex = (EditText) dialogIndexSeek.findViewById(R.id.etIndex);
+                tvIndexChange = (TextView) dialogIndexSeek.findViewById(R.id.tvIndexChange);
+                tvIndexSentence = (TextView) dialogIndexSeek.findViewById(R.id.tvIndexSentence);
+
+                tvIndexChange.setText("0 / " + sentences.size());
+                seekIndex.setMax(sentences.size() - 1);
+
+
+                btnIndex.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int targetIndex = Integer.parseInt(etIndex.getText().toString());
+                        dialogIndexSeek.dismiss();
+
+                        index = targetIndex;
+                        indexForDialog = index;
+                        String originalSentence = sentences.get(index) + ".";
+                        txtOriginalText.setText(originalSentence);
+                        Log.d("kermit",originalSentence + "   index : " + index);
+
+                        if(resultWords[index] != null)
+                            etTranslatedText.setText(resultWords[index]);
+
+//                파파고 번역부분 start();까지 주석처리하면 번역기능 정지
+                        new Thread(){
+                            @Override
+                            public void run() {
+
+                                Papago papago = new Papago();
+                                String resultSentence;
+
+                                resultSentence= papago.getTranslation(originalSentence,"en","ko");
+
+                                Bundle papagoBundle = new Bundle();
+                                Log.d("kermit", "resultSentence" + resultSentence);
+
+
+                                papagoBundle.putString("resultSentence",resultSentence);
+                                Message msg = papago_handler.obtainMessage();
+                                msg.setData(papagoBundle);
+                                papago_handler.sendMessage(msg);
+
+                                Log.d("kermit", "msg" + msg);
+                            }
+                        }.start();
+
+                        listWords.clear();
+                        horizontalAdapter.clear();
+
+                        for (String token : originalSentence.split("[^a-zA-Z_\\-0-9]+")) {
+                            originalWord = token.toLowerCase();
+
+                            if(stopWordSet.contains(originalWord) || originalWord.length() == 0){
+                                continue;
+                            }
+
+                            MainActivity.listWords.add(new ButtonData(originalWord));
+
+                            MainActivity.horizontalAdapter.setData(MainActivity.listWords);
+                            MainActivity.recyclerWords.setAdapter(MainActivity.horizontalAdapter);
+
+
+                        }
+                    }
+                });
+                seekIndex.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        tvIndexChange.setText(seekBar.getProgress() +" / "  +sentences.size());
+                        etIndex.setText(seekBar.getProgress()+"");
+                        tvIndexSentence.setText(sentences.get(seekBar.getProgress()));
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                    }
+                });
         }
         return super.onContextItemSelected(item);
     }
@@ -247,6 +362,15 @@ public class MainActivity extends AppCompatActivity {
         dialogView.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
         dialogView.setContentView(R.layout.dialog_book);
 
+        btnMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.registerForContextMenu(btnMenu);
+                main.openContextMenu(btnMenu);
+                main.unregisterForContextMenu(btnMenu);
+            }
+        });
+
         btnBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -282,8 +406,8 @@ public class MainActivity extends AppCompatActivity {
                 int prevIndex, nextIndex, offsetSentence;
                 offsetSentence = 8;
 
-                prevIndex = indexForDialog - offsetSentence/2;
-                nextIndex = indexForDialog + offsetSentence/2;
+                prevIndex = indexForDialog;
+                nextIndex = indexForDialog + offsetSentence;
                 if(prevIndex < 0){
                     nextIndex = offsetSentence;
                     prevIndex = 0;
@@ -332,9 +456,9 @@ public class MainActivity extends AppCompatActivity {
                         int prevIndex, nextIndex, offsetSentence;
                         offsetSentence = 8;
 
-                        prevIndex = indexForDialog;
-                        nextIndex = indexForDialog + offsetSentence;
-                        indexForDialog = nextIndex;
+                        prevIndex = indexForDialog + offsetSentence;
+                        nextIndex = indexForDialog + offsetSentence * 2;
+                        indexForDialog = prevIndex;
                         if(prevIndex < 0){
                             nextIndex = offsetSentence;
                             prevIndex = 0;
@@ -354,6 +478,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialogView.dismiss();
+                        indexForDialog = index;
                     }
                 });
 

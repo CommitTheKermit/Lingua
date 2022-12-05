@@ -8,8 +8,11 @@
         android:id="@+id/itemWriteFile"
         android:title="파일 쓰기">
     </item>
-<!--    <item-->
-<!--        android:id="@+id/itemReadFile"-->
-<!--        android:title="파일 읽기">-->
-<!--    </item>-->
+    <item
+        android:title="--------">
+    </item>
+    <item
+        android:id="@+id/itemIndexSearch"
+        android:title="줄 이동">
+    </item>
 </menu>
