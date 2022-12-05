@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.itemReadFile:
                 try {
-                    InputStream in = getResources().openRawResource(R.raw.brothers_of_snake);
+                    InputStream in = getResources().openRawResource(R.raw.severed);
                     byte[] b = new byte[in.available()];
 
                     try {
