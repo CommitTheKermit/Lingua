@@ -43,7 +43,7 @@
             android:id="@+id/btnWordTranslate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginRight="190dp"
+            android:layout_marginRight="170dp"
             android:backgroundTint="@color/white"
             android:textColor="#F49349"
             android:text="번역하기" />
@@ -54,7 +54,9 @@
             android:layout_height="match_parent"
             android:backgroundTint="@color/white"
             android:textColor="#F49349"
-            android:text="확인"/>
+            android:text="확인"
+            android:layout_marginRight="10dp"
+            android:maxLines="1"/>
 
     </LinearLayout>
 

@@ -1,26 +1,12 @@
 package com.example.lingua;
 
-import static com.example.lingua.MainActivity.papago_handler;
-
 import android.app.Dialog;
-import android.content.ContentValues;
-import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Bundle;
 
-import android.os.Message;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,10 +14,16 @@ import java.util.Arrays;
 public class NetworkTask extends AsyncTask<Void, Void, String> {
 
     private String originalWord;
+    private TextView tvWordContent;
+    private Dialog wordDialogView;
+    private Button btn;
 
-    public NetworkTask(String word) {
+    public NetworkTask(String word, Dialog wordDialogView, Button btnWordDict) {
 
         this.originalWord = word;
+        this.tvWordContent = (TextView) wordDialogView.findViewById(R.id.tvWordContent);
+        this.wordDialogView = wordDialogView;
+        this.btn = btnWordDict;
     }
 
     @Override
@@ -51,78 +43,32 @@ public class NetworkTask extends AsyncTask<Void, Void, String> {
         ArrayList<String> definitions = new ArrayList<String>(Arrays.asList(s.split("\"definitions\":")));
         String[] temp;
         if (definitions.size() < 2) {
-//            this.cancel(true);
+//            MainActivity.listWords.remove(new ButtonData(this.originalWord));
+//            MainActivity.mapWords.put(this.originalWord,"NO DATA FROM DICTIONARY");
+//            this.tvWordContent.setText("NO DATA FROM DICTIONARY");
+//            MainActivity.horizontalAdapter.setData(MainActivity.listWords);
+//            MainActivity.recyclerWords.setAdapter(MainActivity.horizontalAdapter);
+            this.btn.setEnabled(false);
+            this.btn.setBackgroundColor(Color.GRAY);
+            Toast.makeText(MainActivity.context,"NO DATA FROM DICTIONARY",Toast.LENGTH_SHORT).show();
             return;
         } else {
             for (int i = 1; i < definitions.size(); i++) {
                 temp = definitions.get(i).split("\"");
-                definitions.remove(i);
-                definitions.add(i, temp[1]);
-                Log.d("kermit", "in networkTask definitions : " + definitions.get(i));
+                definitions.set(i,temp[1]);
+//                Log.d("kermit", "in networkTask definitions : " + definitions.get(i));
             }
 
-            String tempDef;
             String defs = "";
-            tempDef = ((MainActivity) MainActivity.context).tvWordDefinitions.getText().toString();
-            for (int i = 1; i < 3 && i < definitions.size(); i++) {
-                defs += definitions.get(i) + ", ";
+            for (int i = 1; i < 4 && i < definitions.size(); i++) {
+                defs += definitions.get(i) + ".\n\n";
             }
-            String trimmed = defs.trim();
-            trimmed = trimmed.substring(0,trimmed.length() - 1);
-            String set = this.originalWord + " : " + trimmed  + ".\n\n";
-            ((MainActivity) MainActivity.context).tvWordDefinitions.setText(tempDef + set);
-
-//            btnWord.setId(count++);
-//            btnWord.setBackgroundResource(R.drawable.buttn_design);
-
-//            btnWord.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {// Dialog 초기화
-//
-//                Button btnWordTranslate;
-//                TextView tvWordContent, tvWordTitle;
-//
-//                btnWordTranslate = (Button) wordDialogView.findViewById(R.id.btnWordTranslate);
-//
-//                tvWordTitle = (TextView) wordDialogView.findViewById(R.id.tvWordTitle);
-//                tvWordContent = (TextView) wordDialogView.findViewById(R.id.tvWordContent);
-//
-//                tvWordTitle.setText(originalWord);
-//
-//
-//                btnWordTranslate.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        new Thread(){
-//                            @Override
-//                            public void run() {
-//
-//                                Papago papago = new Papago();
-//                                String resultSentence;
-//
-//                                resultSentence = papago.getTranslation(originalWord,"en","ko");
-//                                Bundle papagoBundle = new Bundle();
-//                                Log.d("kermit", "resultSentence" + resultSentence);
-//
-//                                papagoBundle.putString("resultSentence",resultSentence);
-//                                Message msg = papago_handler.obtainMessage();
-//                                msg.setData(papagoBundle);
-//                                papago_handler.sendMessage(msg);
-//
-//                                tvWordContent.setText(resultSentence);
-//
-//                            }
-//                        }.start();
-//                    }
-//                });
-//            }
-//        });
-//
-//            ((MainActivity) MainActivity.context).buttonArrayList.add(btnWord);
-
-
+            this.tvWordContent.setText(defs);
+            this.wordDialogView.show();
+            MainActivity.mapWords.put(this.originalWord,defs);
             //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
         }
+
     }
 
 }

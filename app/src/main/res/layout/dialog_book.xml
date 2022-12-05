@@ -51,7 +51,7 @@
             android:id="@+id/btnNextPage"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginRight="100dp"
+            android:layout_marginRight="60dp"
             android:backgroundTint="@color/white"
             android:textColor="#F49349"
             android:text="다음"/>
@@ -61,7 +61,9 @@
             android:layout_height="match_parent"
             android:backgroundTint="@color/white"
             android:textColor="#F49349"
-            android:text="확인"/>
+            android:text="확인"
+            android:layout_marginRight="5dp"
+            android:maxLines="1" />
 
     </LinearLayout>
 

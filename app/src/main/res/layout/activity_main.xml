@@ -14,8 +14,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/btnMenu"
@@ -25,14 +25,17 @@
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_baseline_menu_24"
                 tools:ignore="SpeakableTextPresentCheck" />
+
             <TextView
                 android:id="@+id/txtTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
                 android:text="제목 입력칸"
-                android:textSize="30dp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:textSize="25dp"
+                android:maxLines="1"/>
+
             <ImageButton
                 android:id="@+id/btnBook"
                 android:layout_width="50dp"
@@ -43,89 +46,76 @@
                 tools:ignore="SpeakableTextPresentCheck" />
         </LinearLayout>
 
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_weight="1"
+            android:layout_weight="0.65"
             android:background="@drawable/bottomborder">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/txtOriginalText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:hint="원문 출력칸"
-                    android:textSize="25dp"/>
+                    android:textSize="25dp"
+                    android:textColor="@color/black"/>
             </LinearLayout>
 
         </ScrollView>
-
 
         <EditText
             android:id="@+id/etTranslatedText"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_weight="1"
+            android:layout_weight="0.65"
+            android:background="@drawable/customborder"
             android:hint="번역문 입력칸"
-            android:textSize="25dp"
             android:inputType="textMultiLine"
             android:lines="3"
             android:maxLines="5"
-            android:background="@drawable/customborder"/>
+            android:textSize="25dp"
+            android:textColor="@color/black"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <Button
                 android:id="@+id/btnPreviousLine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginHorizontal="8dp"
-                android:text="이전줄"
-                android:backgroundTint="#F49349"/>
+                android:layout_weight="1"
+                android:backgroundTint="#F49349"
+                android:text="이전줄" />
+
             <Button
                 android:id="@+id/btnNextLine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginHorizontal="8dp"
-                android:text="다음줄"
-                android:backgroundTint="#F49349"/>
+                android:layout_weight="1"
+                android:backgroundTint="#F49349"
+                android:text="다음줄" />
+
             <Button
                 android:id="@+id/btnInsert"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginHorizontal="8dp"
-                android:text="입력"
-                android:backgroundTint="#F49349" />
+                android:layout_weight="1"
+                android:backgroundTint="#F49349"
+                android:text="입력" />
 
         </LinearLayout>
-
-
-        <ScrollView
-            android:background="@drawable/bottomborder"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_weight="1">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/txtPapago"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:hint="파파고 번역문"
-                    android:textSize="23dp"/>
-            </LinearLayout>
-
-        </ScrollView>
 
 
         <ScrollView
@@ -133,35 +123,65 @@
             android:layout_height="30dp"
             android:layout_weight="1"
             android:background="@drawable/bottomborder">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
+
                 <TextView
-                    android:id="@+id/tvWordDefinitions"
+                    android:id="@+id/txtPapago"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:hint="단어 설명"
+                    android:hint="파파고 번역문"
                     android:textSize="23dp"
-                    />
+                    android:textColor="@color/black"/>
             </LinearLayout>
 
         </ScrollView>
-<!--        단어를 버튼에 연결해서 대화상자로 표시하기 미래에 해보기-->
-<!--        <HorizontalScrollView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="80dp"-->
-<!--            android:background="@drawable/customborder">-->
-<!--            <LinearLayout-->
-<!--                android:id="@+id/scrollButtons"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:orientation="horizontal">-->
-<!--            </LinearLayout>-->
-<!--        </HorizontalScrollView>-->
 
 
+        <!--        <ScrollView-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="30dp"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:background="@drawable/bottomborder">-->
+        <!--            <LinearLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:orientation="vertical">-->
+        <!--                <TextView-->
+        <!--                    android:id="@+id/tvWordDefinitions"-->
+        <!--                    android:layout_width="match_parent"-->
+        <!--                    android:layout_height="match_parent"-->
+        <!--                    android:layout_weight="1"-->
+        <!--                    android:hint="단어 설명"-->
+        <!--                    android:textSize="23dp"-->
+        <!--                    />-->
+        <!--            </LinearLayout>-->
+
+        <!--        </ScrollView>-->
+
+        <!--        단어를 버튼에 연결해서 대화상자로 표시하기 미래에 해보기-->
+        <!--        <HorizontalScrollView-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="80dp"-->
+        <!--            android:background="@drawable/customborder">-->
+        <!--            <LinearLayout-->
+        <!--                android:id="@+id/scrollButtons"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="mat
+ch_parent"-->
+        <!--                android:orientation="horizontal">-->
+        <!--            </LinearLayout>-->
+        <!--        </HorizontalScrollView>-->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerWords"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/customborder" />
 
 
     </LinearLayout>

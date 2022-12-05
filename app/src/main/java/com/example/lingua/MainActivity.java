@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -26,12 +28,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import java.io.BufferedReader;
@@ -54,6 +58,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
 import com.example.lingua.Papago;
@@ -70,9 +75,13 @@ public class MainActivity extends AppCompatActivity {
     EditText etTranslatedText;
 //    HorizontalScrollView scrollButtons;
     Dialog dialogView;
-    Dialog wordDialogView;
 
-    TextView tvWordDefinitions;
+
+    public static RecyclerView recyclerWords;
+    public static HorizontalAdapter horizontalAdapter;
+    LinearLayoutManager linearLayoutManager;
+
+//    TextView tvWordDefinitions; //TODO delete or implement
     int index = 0;
     int indexForDialog = 0;
     ArrayList<String> sentences;
@@ -87,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
     String[] resultWords;
 
     ArrayList<Button> buttonArrayList = new ArrayList<>();
+
+    public static ArrayList<ButtonData> listWords = new ArrayList<>();
+
+    public static HashMap<String, String> mapWords = new HashMap<>();
+    public static HashMap<String, String> mapWordsTranslated = new HashMap<>();
 
 
 
@@ -213,7 +227,21 @@ public class MainActivity extends AppCompatActivity {
         txtTitle = (TextView) findViewById(R.id.txtTitle);
         txtPapago = (TextView) findViewById(R.id.txtPapago);
 //        scrollButtons = (LinearLayout) findViewById(R.id.scrollButtons);
-        tvWordDefinitions = (TextView) findViewById(R.id.tvWordDefinitions);
+//        tvWordDefinitions = (TextView) findViewById(R.id.tvWordDefinitions);
+        recyclerWords = (RecyclerView) findViewById(R.id.recyclerWords);
+
+        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+        recyclerWords.setLayoutManager(linearLayoutManager);
+
+        horizontalAdapter = new HorizontalAdapter();
+//
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+//                R.layout.word_button,listWords);
+
+//        recyclerWords.setAdapter(adapter);
+
 
         dialogView = new Dialog(MainActivity.this);       // Dialog 초기화
         dialogView.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
@@ -222,6 +250,12 @@ public class MainActivity extends AppCompatActivity {
         btnBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(sentences == null){
+                    Toast.makeText(getApplicationContext(),"파일을 열어주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 WindowManager.LayoutParams params = dialogView.getWindow().getAttributes();
                 params.width = WindowManager.LayoutParams.MATCH_PARENT;
                 params.height = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -328,7 +362,15 @@ public class MainActivity extends AppCompatActivity {
         btnPreviousLine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(index <= 0) return;
+
+                if(index <= 0){
+                    return;
+                }
+
+                if(sentences == null){
+                    Toast.makeText(getApplicationContext(),"파일을 열어주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 index -= 1;
                 String originalSentence = sentences.get(index) + ".";
                 txtOriginalText.setText(originalSentence);
@@ -336,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(resultWords[index] != null)
                     etTranslatedText.setText(resultWords[index]);
-                tvWordDefinitions.setText("");
+//                tvWordDefinitions.setText("");
 
 //                파파고 번역부분 start();까지 주석처리하면 번역기능 정지
                 new Thread(){
@@ -378,6 +420,12 @@ public class MainActivity extends AppCompatActivity {
         btnNextLine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(sentences == null){
+                    Toast.makeText(getApplicationContext(),"파일을 열어주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if(sentences.size() <= index) return;
                 index += 1;
                 indexForDialog = index;
@@ -387,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(resultWords[index] != null)
                     etTranslatedText.setText(resultWords[index]);
-                tvWordDefinitions.setText("");
+//                tvWordDefinitions.setText("");
 
 //                파파고 번역부분 start();까지 주석처리하면 번역기능 정지
                 new Thread(){
@@ -412,6 +460,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }.start();
 
+                listWords.clear();
+                horizontalAdapter.clear();
+
                 for (String token : originalSentence.split("[^a-zA-Z_\\-0-9]+")) {
                     originalWord = token.toLowerCase();
 
@@ -419,56 +470,11 @@ public class MainActivity extends AppCompatActivity {
                         continue;
                     }
 
+                    MainActivity.listWords.add(new ButtonData(originalWord));
 
 
-//                    wordDialogView = new Dialog(getApplicationContext());
-//
-//                    Button btnWord = new Button(getApplicationContext());
-//                    btnWord.setText(originalWord);
-//                    btnWord.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            wordDialogView = new Dialog(MainActivity.this);       // Dialog 초기화
-//                            wordDialogView.requestWindowFeature(Window.FEATURE_NO_TITLE); // 타이틀 제거
-//                            wordDialogView.setContentView(R.layout.word_dialog);
-//
-//                            WindowManager.LayoutParams params = wordDialogView.getWindow().getAttributes();
-//                            params.width = WindowManager.LayoutParams.MATCH_PARENT;
-//                            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-//
-//                            wordDialogView.getWindow().setAttributes(params);
-//                            wordDialogView.show();
-//
-//                            Button btnTWordTranslate, btnWordConfirm;
-//                            TextView tvWordContent, tvWordTitle;
-//                            LinearLayout linearWordButtonBar;
-//
-//                            btnTWordTranslate = (Button) wordDialogView.findViewById(R.id.btnWordTranslate);
-//                            btnWordConfirm = (Button) wordDialogView.findViewById(R.id.btnWordConfirm);
-//
-//                            tvWordTitle = (TextView) wordDialogView.findViewById(R.id.tvWordTitle);
-//                            tvWordContent = (TextView) wordDialogView.findViewById(R.id.tvWordContent);
-//
-//                            linearWordButtonBar = (LinearLayout) wordDialogView.findViewById(R.id.linearWordButtonBar);
-//                            linearWordButtonBar.bringToFront();
-//
-//                            tvWordTitle.setText(originalWord);
-//
-//                            btnWordConfirm.setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                    wordDialogView.dismiss();
-//                                }
-//                            });
-//                        }
-//                    });
-//                    scrollButtons.addView(btnWord);
-
-                    // AsyncTask를 통해 HttpURLConnection 수행.
-                    // 단어사전 부분 두줄 지우면 단어사전 정지함
-                    NetworkTask networkTask = new NetworkTask(originalWord);
-                    networkTask.execute();
-
+                    MainActivity.horizontalAdapter.setData(MainActivity.listWords);
+                    MainActivity.recyclerWords.setAdapter(MainActivity.horizontalAdapter);
 
 
                 }
@@ -477,6 +483,10 @@ public class MainActivity extends AppCompatActivity {
         btnInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(sentences == null){
+                    Toast.makeText(getApplicationContext(),"파일을 열어주세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 resultWords[index] = etTranslatedText.getText().toString();
             }
         });
@@ -484,92 +494,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        super.onCreateOptionsMenu(menu);
-//        MenuInflater menuInflater = getMenuInflater();
-//        menuInflater.inflate(R.menu.menu,menu);
-//        return true;
-//    }
-
-
-
-//
-//    public void mOnFileRead(View v){
-//        try {
-//            InputStream in = getResources().openRawResource(R.raw.brothers_of_snake);
-//            byte[] b = new byte[in.available()];
-//
-//            try {
-//                in.read(b);
-//            } catch (IOException e) {
-//                Log.d("kermit",e.getMessage());
-//            }
-//            sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.?!\n]")));
-//
-//            InputStream inStopWord = getResources().openRawResource(R.raw.stop);
-//            byte[] bytesStopWord = new byte[inStopWord.available()];
-//
-//            try {
-//                inStopWord.read(bytesStopWord);
-//            } catch (IOException e) {
-//                Log.d("kermit",e.getMessage());
-//            }
-//
-//            Scanner scanStop = new Scanner(new String(bytesStopWord));
-//            while(scanStop.hasNext()){
-//                stopWordSet.add(scanStop.next());
-//            }
-//
-//            String temp;
-//            bookTitle = sentences.remove(0);
-//            for(int i = 0; i < sentences.size(); i++) {
-//                if (sentences.get(i).length() == 0) {
-//                    sentences.remove(i);
-//                    i--;
-//                    continue;
-//                }
-//
-//
-//                temp = sentences.get(i).trim();
-//                sentences.remove(i);
-//                sentences.add(i, temp);
-//            }
-//            resultWords = new String[sentences.size()];
-//            txtTitle.setText(bookTitle);
-//            txtOriginalText.setText(bookTitle);
-//
-////                Log.d("kermit",sentences.get(i).trim() + "   length : " + sentences.get(i).length());
-//
-//
-//
-//        }
-//        catch (IOException e) {
-//            Log.d("kermit",e.getMessage());
-//        }
-//    }
-//
-//
-//    @RequiresApi(api = Build.VERSION_CODES.O)
-//    public void mOnFileWrite(View v){
-//        try {
-//            FileOutputStream outputStream = openFileOutput(LocalDate.now().toString(),
-//                    Context.MODE_PRIVATE);
-//
-//
-//            String output = "";
-//            // 현재 조건 상태에선 중간에 번역안한 문장이 있으면 그 지점부터 다음 번역문은 무시됨.
-//            for(int i = 0; i < resultWords.length || resultWords[i] != null; i++){
-//                output += resultWords[i];
-//            }
-//            outputStream.write(output.getBytes());
-//            outputStream.close();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
     @SuppressLint("HandlerLeak")
     static Handler papago_handler = new Handler(){
         @Override
@@ -615,6 +539,5 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.resultWord = resultWord;
         }
     }
-
 
 }
