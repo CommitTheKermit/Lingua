@@ -238,14 +238,13 @@ public class MainActivity extends AppCompatActivity {
                 tvIndexChange = (TextView) dialogIndexSeek.findViewById(R.id.tvIndexChange);
                 tvIndexSentence = (TextView) dialogIndexSeek.findViewById(R.id.tvIndexSentence);
 
-                tvIndexChange.setText("0 / " + sentences.size());
-                seekIndex.setMax(sentences.size() - 1);
-                tvIndexSentence.setText(sentences.get(index));
-
-
                 if(index < 0){
                     index = 0;
                 }
+
+                tvIndexChange.setText("0 / " + sentences.size());
+                seekIndex.setMax(sentences.size() - 1);
+                tvIndexSentence.setText(sentences.get(index));
                 seekIndex.setProgress(index);
                 etIndex.setText(index+"");
 
