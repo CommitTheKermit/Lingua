@@ -451,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                 tvContent.setText(bookContext);
 
                 int maxIndex = sentences.size() - 1;
-                tvDialogIndex.setText(prevIndex + " / " + maxIndex );
+                tvDialogIndex.setText(prevIndex + "~" + Integer.toString(nextIndex - 1) +  " / " + maxIndex );
 
                 btnPrevPage.setOnClickListener(new View.OnClickListener() {
                    @Override
@@ -585,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(sentences.size() <= index) return;
+                if(sentences.size()-1 <= index) return;
                 index += 1;
                 indexForDialog = index;
                 String originalSentence = sentences.get(index) + ".";
