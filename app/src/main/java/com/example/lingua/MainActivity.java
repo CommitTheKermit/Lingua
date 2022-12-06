@@ -194,13 +194,13 @@ public class MainActivity extends AppCompatActivity {
                     DateTimeFormatter format = DateTimeFormatter.ofPattern("hh시 mm분 ss초");
                     String formattedNow = now.format(format);
 
-                    FileOutputStream outputStream = openFileOutput(LocalDate.now().toString() + " " + formattedNow,
+                    FileOutputStream outputStream = openFileOutput(LocalDate.now().toString() + " " + formattedNow + ".txt",
                             Context.MODE_PRIVATE);
 
                     String output = "";
                     // 현재 조건 상태에선 중간에 번역안한 문장이 있으면 그 지점부터 다음 번역문은 무시됨.
                     //resultWords[i] != null
-                    for(int i = 0; i < resultWords.length && resultWords[i] != null; i++){
+                    for(int i = 0; i < resultWords.length; i++){
                         output += resultWords[i] + "\n";
                     }
                     outputStream.write(output.getBytes());
@@ -273,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
 
                         int maxIndex = sentences.size() - 1;
                         tvIndexCurrent.setText(index + " / " + maxIndex );
+                        etTranslatedText.setText("");
 
                         if(resultWords[index] != null)
                             etTranslatedText.setText(resultWords[index]);
@@ -534,6 +535,7 @@ public class MainActivity extends AppCompatActivity {
 
                 int maxIndex = sentences.size() - 1;
                 tvIndexCurrent.setText(index + " / " + maxIndex );
+                etTranslatedText.setText("");
 
                 if(resultWords[index] != null)
                     etTranslatedText.setText(resultWords[index]);
@@ -561,16 +563,21 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }.start();
 
+                listWords.clear();
+                horizontalAdapter.clear();
+
                 for (String token : originalSentence.split("[^a-zA-Z_\\-0-9]+")) {
                     originalWord = token.toLowerCase();
 
                     if(stopWordSet.contains(originalWord) || originalWord.length() == 0){
                         continue;
                     }
-                    // AsyncTask를 통해 HttpURLConnection 수행.
-                    // 단어사전 부분 두줄 지우면 단어사전 정지함
-//                    NetworkTask networkTask = new NetworkTask(originalWord);
-//                    networkTask.execute();
+
+                    MainActivity.listWords.add(new ButtonData(originalWord));
+
+                    MainActivity.horizontalAdapter.setData(MainActivity.listWords);
+                    MainActivity.recyclerWords.setAdapter(MainActivity.horizontalAdapter);
+
 
                 }
             }
@@ -593,6 +600,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("kermit",originalSentence + "   index : " + index);
                 int maxIndex = sentences.size() - 1;
                 tvIndexCurrent.setText(index + " / " + maxIndex );
+                etTranslatedText.setText("");
 
                 if(resultWords[index] != null)
                     etTranslatedText.setText(resultWords[index]);
