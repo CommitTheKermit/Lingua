@@ -19,10 +19,11 @@
 
     <LinearLayout
         android:layout_marginTop="20sp"
-        android:layout_width="350sp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginHorizontal="10sp">
         <SeekBar
             android:id="@+id/seekIndex"
             android:layout_width="200sp"
@@ -33,7 +34,7 @@
 
         <TextView
             android:id="@+id/tvIndexChange"
-            android:layout_width="150sp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textColor="@color/black"
