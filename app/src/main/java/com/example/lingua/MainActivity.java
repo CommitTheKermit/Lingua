@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                     String temp;
                     bookTitle = sentences.remove(0);
                     for(int i = 0; i < sentences.size(); i++) {
-                        if (sentences.get(i).length() == 0) {
+                        if (sentences.get(i).trim().length() == 0) {
                             sentences.remove(i);
                             i--;
                             continue;
@@ -239,7 +239,15 @@ public class MainActivity extends AppCompatActivity {
 
                 tvIndexChange.setText("0 / " + sentences.size());
                 seekIndex.setMax(sentences.size() - 1);
-                etIndex.setText(index);
+
+
+                if(index < 0){
+                    index = 0;
+                }
+                seekIndex.setProgress(index);
+                etIndex.setText(index+"");
+
+
 
 
                 btnIndex.setOnClickListener(new View.OnClickListener() {
@@ -374,9 +382,7 @@ public class MainActivity extends AppCompatActivity {
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                main.registerForContextMenu(btnMenu);
                 main.openContextMenu(btnMenu);
-                main.unregisterForContextMenu(btnMenu);
             }
         });
 
