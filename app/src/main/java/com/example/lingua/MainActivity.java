@@ -239,12 +239,21 @@ public class MainActivity extends AppCompatActivity {
 
                 tvIndexChange.setText("0 / " + sentences.size());
                 seekIndex.setMax(sentences.size() - 1);
+                etIndex.setText(index);
 
 
                 btnIndex.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int targetIndex = Integer.parseInt(etIndex.getText().toString());
+                        int targetIndex = 0;
+                        try{
+                            targetIndex = Integer.parseInt(etIndex.getText().toString());
+                        }
+                        catch(Exception e){
+                            Toast.makeText(getApplicationContext(),"잘못된 입력", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         dialogIndexSeek.dismiss();
 
                         index = targetIndex;

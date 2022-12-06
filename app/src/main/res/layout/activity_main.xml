@@ -50,7 +50,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_weight="0.65"
+            android:layout_weight="0.7"
             android:background="@drawable/bottomborder">
 
             <LinearLayout
@@ -74,7 +74,7 @@
             android:id="@+id/etTranslatedText"
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:layout_weight="0.65"
+            android:layout_weight="0.5"
             android:background="@drawable/customborder"
             android:hint="번역문 입력칸"
             android:inputType="textMultiLine"

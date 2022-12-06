@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:text="sampleContext"
             android:textSize="25dp"
+            android:textColor="@color/black"
             android:layout_margin="15dp"/>
     </ScrollView>
 
