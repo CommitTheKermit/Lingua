@@ -4,21 +4,43 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvDialogTitle"
-        android:layout_gravity="left"
+    <RelativeLayout
+        android:id="@+id/linearTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="sample Title"
-        android:textSize="40dp"
-        android:textColor="@color/black"
-        android:layout_margin="15dp"
-        />
+        android:layout_marginTop="15dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvDialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            android:text="sample Title"
+            android:textColor="@color/black"
+            android:textSize="40dp"
+            android:layout_alignParentLeft="true"/>
+
+        <TextView
+            android:id="@+id/tvDialogIndex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 / 0"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:layout_marginRight="30sp"
+            android:layout_alignParentRight="true" />
+
+    </RelativeLayout>
+
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tvDialogTitle"
+        android:layout_below="@id/linearTop"
         android:layout_above="@id/linearButtonBar"
         android:background="@drawable/bottomborder">
         <TextView

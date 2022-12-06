@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     Button itemReadFile, itemWriteFile;
     TextView txtOriginalText;
     TextView txtTitle;
+    TextView tvIndexCurrent;
     static TextView txtPapago;
     EditText etTranslatedText;
 //    HorizontalScrollView scrollButtons;
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.itemReadFile:
                 try {
-                    InputStream in = getResources().openRawResource(R.raw.severed);
+                    InputStream in = getResources().openRawResource(R.raw.severed_partial);
                     byte[] b = new byte[in.available()];
 
                     try {
@@ -239,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
                 tvIndexChange.setText("0 / " + sentences.size());
                 seekIndex.setMax(sentences.size() - 1);
+                tvIndexSentence.setText(sentences.get(index));
 
 
                 if(index < 0){
@@ -269,6 +271,9 @@ public class MainActivity extends AppCompatActivity {
                         String originalSentence = sentences.get(index) + ".";
                         txtOriginalText.setText(originalSentence);
                         Log.d("kermit",originalSentence + "   index : " + index);
+
+                        int maxIndex = sentences.size() - 1;
+                        tvIndexCurrent.setText(index + " / " + maxIndex );
 
                         if(resultWords[index] != null)
                             etTranslatedText.setText(resultWords[index]);
@@ -318,7 +323,9 @@ public class MainActivity extends AppCompatActivity {
                 seekIndex.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        tvIndexChange.setText(seekBar.getProgress() +" / "  +sentences.size());
+                        int maxIndex = sentences.size() - 1;
+
+                        tvIndexChange.setText(seekBar.getProgress() +" / "  + maxIndex);
                         etIndex.setText(seekBar.getProgress()+"");
                         tvIndexSentence.setText(sentences.get(seekBar.getProgress()));
                     }
@@ -358,6 +365,7 @@ public class MainActivity extends AppCompatActivity {
         etTranslatedText = (EditText) findViewById(R.id.etTranslatedText);
         txtTitle = (TextView) findViewById(R.id.txtTitle);
         txtPapago = (TextView) findViewById(R.id.txtPapago);
+        tvIndexCurrent = (TextView) findViewById(R.id.tvIndexCurrent);
 //        scrollButtons = (LinearLayout) findViewById(R.id.scrollButtons);
 //        tvWordDefinitions = (TextView) findViewById(R.id.tvWordDefinitions);
         recyclerWords = (RecyclerView) findViewById(R.id.recyclerWords);
@@ -403,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
                 dialogView.show();
 
                 Button btnPrevPage, btnNextPage, btnConfirm;
-                TextView tvDialogTitle, tvContent;
+                TextView tvDialogTitle, tvContent, tvDialogIndex;
                 LinearLayout linearButtonBar;
 
 
@@ -413,9 +421,12 @@ public class MainActivity extends AppCompatActivity {
 
                 tvDialogTitle = (TextView) dialogView.findViewById(R.id.tvDialogTitle);
                 tvContent = (TextView) dialogView.findViewById(R.id.tvContent);
+                tvDialogIndex = (TextView) dialogView.findViewById(R.id.tvDialogIndex) ;
 
                 linearButtonBar = (LinearLayout) dialogView.findViewById(R.id.linearButtonBar);
                 linearButtonBar.bringToFront();
+
+
 
                 String bookContext = "";
                 int prevIndex, nextIndex, offsetSentence;
@@ -436,8 +447,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 bookContext += "\n\n";
 
+
                 tvDialogTitle.setText(bookTitle);
                 tvContent.setText(bookContext);
+
+                int maxIndex = sentences.size() - 1;
+                tvDialogIndex.setText(prevIndex + " / " + maxIndex );
 
                 btnPrevPage.setOnClickListener(new View.OnClickListener() {
                    @Override
@@ -462,6 +477,7 @@ public class MainActivity extends AppCompatActivity {
                        }
                        bookContext += "\n\n";
                        tvContent.setText(bookContext);
+                       tvDialogIndex.setText(prevIndex + "~" + Integer.toString(nextIndex - 1) +  " / " + maxIndex );
                    }
                });
                 btnNextPage.setOnClickListener(new View.OnClickListener() {
@@ -487,6 +503,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         bookContext += "\n\n";
                         tvContent.setText(bookContext);
+                        tvDialogIndex.setText(prevIndex + "~" + Integer.toString(nextIndex - 1) +  " / " + maxIndex );
                     }
                 });
                 btnConfirm.setOnClickListener(new View.OnClickListener() {
@@ -515,6 +532,9 @@ public class MainActivity extends AppCompatActivity {
                 String originalSentence = sentences.get(index) + ".";
                 txtOriginalText.setText(originalSentence);
                 Log.d("kermit",originalSentence + "   index : " + index);
+
+                int maxIndex = sentences.size() - 1;
+                tvIndexCurrent.setText(index + " / " + maxIndex );
 
                 if(resultWords[index] != null)
                     etTranslatedText.setText(resultWords[index]);
@@ -572,6 +592,8 @@ public class MainActivity extends AppCompatActivity {
                 String originalSentence = sentences.get(index) + ".";
                 txtOriginalText.setText(originalSentence);
                 Log.d("kermit",originalSentence + "   index : " + index);
+                int maxIndex = sentences.size() - 1;
+                tvIndexCurrent.setText(index + " / " + maxIndex );
 
                 if(resultWords[index] != null)
                     etTranslatedText.setText(resultWords[index]);
