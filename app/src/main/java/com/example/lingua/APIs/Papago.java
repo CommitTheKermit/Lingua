@@ -1,4 +1,4 @@
-package com.example.lingua;
+package com.example.lingua.APIs;
 
 import android.util.Log;
 

@@ -1,6 +1,4 @@
-package com.example.lingua;
-
-import android.content.ContentValues;
+package com.example.lingua.APIs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +7,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 
 public class RequestHttpURLConnection {
 

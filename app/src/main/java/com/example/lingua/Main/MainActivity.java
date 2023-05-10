@@ -1,10 +1,13 @@
-package com.example.lingua;
-
+package com.example.lingua.Main;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,49 +15,36 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
+import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
+import android.Manifest;
+import android.content.pm.PackageManager;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-
-import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -63,7 +53,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Scanner;
-import com.example.lingua.Papago;
+
+import com.example.lingua.R;
+import com.example.lingua.APIs.*;
+import com.example.lingua.Views.*;
+
 
 public class MainActivity extends AppCompatActivity {
     Activity main = this;
@@ -82,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
     Dialog dialogView;
     Dialog dialogIndexSeek;
 
-
+    private static final int CHOOSE_FILE_REQUESTCODE = 8777;
+    private static final int PICKFILE_RESULT_CODE = 8778;
     public static RecyclerView recyclerWords;
     public static HorizontalAdapter horizontalAdapter;
     LinearLayoutManager linearLayoutManager;
@@ -108,8 +103,11 @@ public class MainActivity extends AppCompatActivity {
     public static HashMap<String, String> mapWords = new HashMap<>();
     public static HashMap<String, String> mapWordsTranslated = new HashMap<>();
 
+    static String filePath;
 
 
+
+    //메뉴 버튼 띄우기 위한 함수
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -120,67 +118,147 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if(result.getResultCode() == RESULT_OK) {
+                        Intent intent = result.getData();
+                        Uri uri = intent.getData();
+                        filePath = uri.getPath();
+                        filePath = filePath.substring(14, filePath.length());
+                        Log.d("kermit","uri");
+                        Log.d("kermit","filepath = " + filePath);
+                        try{
+                            File file = new File(filePath);
+                            InputStream in = new FileInputStream(file);
+    //                    InputStream in = getResources().openRawResource(R.raw.severed);
+                            byte[] b = new byte[in.available()];
+
+                            try {
+                                in.read(b);
+                            } catch (IOException e) {
+                                Log.d("kermit",e.getMessage());
+                            }
+                            sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.\n]")));
+
+                            InputStream inStopWord = getResources().openRawResource(R.raw.stop);
+                            byte[] bytesStopWord = new byte[inStopWord.available()];
+
+                            try {
+                                inStopWord.read(bytesStopWord);
+                            } catch (IOException e) {
+                                Log.d("kermit",e.getMessage());
+                            }
+
+                            Scanner scanStop = new Scanner(new String(bytesStopWord));
+                            while(scanStop.hasNext()){
+                                stopWordSet.add(scanStop.next());
+                            }
+
+                            String temp;
+                            bookTitle = sentences.remove(0);
+                            for(int i = 0; i < sentences.size(); i++) {
+                                if (sentences.get(i).trim().length() == 0) {
+                                    sentences.remove(i);
+                                    i--;
+                                    continue;
+                                }
+                                temp = sentences.get(i).trim();
+                                sentences.remove(i);
+                                sentences.add(i, temp);
+                            }
+                            resultWords = new String[sentences.size()];
+                            txtTitle.setText(bookTitle);
+                            txtOriginalText.setText("시작");
+                            index = -1;
+    //                    btnInsert.setEnabled(false);
+    //                    btnPreviousLine.setEnabled(false);
+    //                Log.d("kermit",sentences.get(i).trim() + "   length : " + sentences.get(i).length());
+
+                            in.close();
+                            inStopWord.close();
+                        }
+                        catch (IOException e) {
+                            Log.d("kermit",e.getMessage());
+                        }
+                    }
+                }
+            }
+    );
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.itemReadFile:
-                try {
-                    InputStream in = getResources().openRawResource(R.raw.severed_partial);
-                    byte[] b = new byte[in.available()];
 
-                    try {
-                        in.read(b);
-                    } catch (IOException e) {
-                        Log.d("kermit",e.getMessage());
-                    }
-                    sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.\n]")));
+                    Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath()
+                            + "/Download/");
 
-                    InputStream inStopWord = getResources().openRawResource(R.raw.stop);
-                    byte[] bytesStopWord = new byte[inStopWord.available()];
-
-                    try {
-                        inStopWord.read(bytesStopWord);
-                    } catch (IOException e) {
-                        Log.d("kermit",e.getMessage());
-                    }
-
-                    Scanner scanStop = new Scanner(new String(bytesStopWord));
-                    while(scanStop.hasNext()){
-                        stopWordSet.add(scanStop.next());
-                    }
-
-                    String temp;
-                    bookTitle = sentences.remove(0);
-                    for(int i = 0; i < sentences.size(); i++) {
-                        if (sentences.get(i).trim().length() == 0) {
-                            sentences.remove(i);
-                            i--;
-                            continue;
-                        }
-
-
-                        temp = sentences.get(i).trim();
-                        sentences.remove(i);
-                        sentences.add(i, temp);
-                    }
-                    resultWords = new String[sentences.size()];
-                    txtTitle.setText(bookTitle);
-                    txtOriginalText.setText("시작");
-                    index = -1;
-//                    btnInsert.setEnabled(false);
-//                    btnPreviousLine.setEnabled(false);
-
-//                Log.d("kermit",sentences.get(i).trim() + "   length : " + sentences.get(i).length());
-
-
-                    in.close();
-                    inStopWord.close();
-                }
-                catch (IOException e) {
-                    Log.d("kermit",e.getMessage());
-                }
-                break;
+                    Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+                    chooseFile.setDataAndType(uri, "text/plain");
+                    chooseFile = Intent.createChooser(chooseFile, "Choose a file");
+//                    chooseFile.setAction(Intent.ACTION_PICK);
+//                    startActivity(chooseFile);
+                    activityResultLauncher.launch(chooseFile);
+//                    File file = new File(filePath);
+//                    FileInputStream in = new FileInputStream(file);
+////                    InputStream in = getResources().openRawResource(R.raw.severed);
+//                    byte[] b = new byte[in.available()];
+//
+//                    try {
+//                        in.read(b);
+//                    } catch (IOException e) {
+//                        Log.d("kermit",e.getMessage());
+//                    }
+//                    sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.\n]")));
+//
+//                    InputStream inStopWord = getResources().openRawResource(R.raw.stop);
+//                    byte[] bytesStopWord = new byte[inStopWord.available()];
+//
+//                    try {
+//                        inStopWord.read(bytesStopWord);
+//                    } catch (IOException e) {
+//                        Log.d("kermit",e.getMessage());
+//                    }
+//
+//                    Scanner scanStop = new Scanner(new String(bytesStopWord));
+//                    while(scanStop.hasNext()){
+//                        stopWordSet.add(scanStop.next());
+//                    }
+//
+//                    String temp;
+//                    bookTitle = sentences.remove(0);
+//                    for(int i = 0; i < sentences.size(); i++) {
+//                        if (sentences.get(i).trim().length() == 0) {
+//                            sentences.remove(i);
+//                            i--;
+//                            continue;
+//                        }
+//
+//
+//                        temp = sentences.get(i).trim();
+//                        sentences.remove(i);
+//                        sentences.add(i, temp);
+//                    }
+//                    resultWords = new String[sentences.size()];
+//                    txtTitle.setText(bookTitle);
+//                    txtOriginalText.setText("시작");
+//                    index = -1;
+////                    btnInsert.setEnabled(false);
+////                    btnPreviousLine.setEnabled(false);
+//
+////                Log.d("kermit",sentences.get(i).trim() + "   length : " + sentences.get(i).length());
+//
+//
+//                    in.close();
+//                    inStopWord.close();
+//                }
+//                catch (IOException e) {
+//                    Log.d("kermit",e.getMessage());
+//                }
+                    break;
             case R.id.itemWriteFile:
 
                 if(sentences == null){
@@ -248,9 +326,6 @@ public class MainActivity extends AppCompatActivity {
                 seekIndex.setProgress(index);
                 etIndex.setText(index+"");
 
-
-
-
                 btnIndex.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -264,7 +339,6 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         dialogIndexSeek.dismiss();
-
                         index = targetIndex;
                         indexForDialog = index;
                         String originalSentence = sentences.get(index) + ".";
@@ -312,11 +386,8 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             MainActivity.listWords.add(new ButtonData(originalWord));
-
                             MainActivity.horizontalAdapter.setData(MainActivity.listWords);
                             MainActivity.recyclerWords.setAdapter(MainActivity.horizontalAdapter);
-
-
                         }
                     }
                 });
@@ -346,7 +417,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // 권한ID를 가져옵니다
+        int permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
+        int permission2 = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        // 권한이 열려있는지 확인
+        if (permission == PackageManager.PERMISSION_DENIED || permission2 == PackageManager.PERMISSION_DENIED) {
+            // 마쉬멜로우 이상버전부터 권한을 물어본다
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // 권한 체크(READ_PHONE_STATE의 requestCode를 1000으로 세팅
+                requestPermissions(
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                        1000);
+            }
+        }
         context = this;
 
         mHandler = new Handler() ;
@@ -682,31 +769,32 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    class WordTranslateThread extends Thread {
-        String resultWord;
-        String originalWord;
-        public WordTranslateThread(String word){
-            this.originalWord = word;
-        }
 
-        @Override
-        public void run() {
-
-            Papago papago = new Papago();
-            resultWord= papago.getTranslation(originalWord,"en","ko");
-
-            Bundle papagoBundle = new Bundle();
-            Log.d("kermit", "resultWord" + resultWord);
-
-            papagoBundle.putString("resultWord",resultWord);
-            Message msg = papagoWordHandler.obtainMessage();
-            msg.setData(papagoBundle);
-            papagoWordHandler.sendMessage(msg);
-
-            Log.d("kermit", "msg" + msg);
-
-            MainActivity.this.resultWord = resultWord;
-        }
-    }
+//    class WordTranslateThread extends Thread {
+//        String resultWord;
+//        String originalWord;
+//        public WordTranslateThread(String word){
+//            this.originalWord = word;
+//        }
+//
+//        @Override
+//        public void run() {
+//
+//            Papago papago = new Papago();
+//            resultWord= papago.getTranslation(originalWord,"en","ko");
+//
+//            Bundle papagoBundle = new Bundle();
+//            Log.d("kermit", "resultWord" + resultWord);
+//
+//            papagoBundle.putString("resultWord",resultWord);
+//            Message msg = papagoWordHandler.obtainMessage();
+//            msg.setData(papagoBundle);
+//            papagoWordHandler.sendMessage(msg);
+//
+//            Log.d("kermit", "msg" + msg);
+//
+//            MainActivity.this.resultWord = resultWord;
+//        }
+//    }
 
 }

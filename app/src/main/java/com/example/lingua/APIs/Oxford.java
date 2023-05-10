@@ -1,4 +1,4 @@
-package com.example.lingua;
+package com.example.lingua.APIs;
 
 import  javax.net.ssl.HttpsURLConnection;
 import  java.io.BufferedReader;

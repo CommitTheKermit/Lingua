@@ -1,4 +1,4 @@
-package com.example.lingua;
+package com.example.lingua.APIs;
 
 import android.app.Dialog;
 import android.graphics.Color;
@@ -7,6 +7,9 @@ import android.os.AsyncTask;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.lingua.Main.MainActivity;
+import com.example.lingua.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;

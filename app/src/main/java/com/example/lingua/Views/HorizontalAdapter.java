@@ -1,19 +1,19 @@
-package com.example.lingua;
+package com.example.lingua.Views;
 
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.lingua.R;
+
 import java.util.ArrayList;
 
-class HorizontalAdapter extends RecyclerView.Adapter<HorizontalViewHolder> {
+public class HorizontalAdapter extends RecyclerView.Adapter<HorizontalViewHolder> {
 
     private ArrayList<ButtonData> ButtonDatas;
     public void setData(ArrayList<ButtonData> list){

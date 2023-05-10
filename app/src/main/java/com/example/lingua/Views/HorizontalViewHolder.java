@@ -1,4 +1,4 @@
-package com.example.lingua;
+package com.example.lingua.Views;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -15,6 +15,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.lingua.Main.MainActivity;
+import com.example.lingua.APIs.NetworkTask;
+import com.example.lingua.APIs.Papago;
+import com.example.lingua.R;
 
 public class HorizontalViewHolder extends RecyclerView.ViewHolder {
 
@@ -125,14 +130,14 @@ public class HorizontalViewHolder extends RecyclerView.ViewHolder {
 
 
     }
-
-    public Button getBtnWord(){
-        return this.btnWordDict;
-    }
-
-    public void setBtnWord(Button btn){
-        this.btnWordDict = btn;
-    }
+//
+//    public Button getBtnWord(){
+//        return this.btnWordDict;
+//    }
+//
+//    public void setBtnWord(Button btn){
+//        this.btnWordDict = btn;
+//    }
     @SuppressLint("HandlerLeak")
     Handler papago_handler = new Handler(){
         @Override
