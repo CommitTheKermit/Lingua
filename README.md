@@ -27,7 +27,7 @@
     읽으며 영어를 어느정도 알아도 번역하는 것이 어렵다는 것을 느껴 그것을 편하게 번역하고 싶다는 마음에 프로젝트를 시작하게 되었습니다.
 
 ## **셀프 피드백**
-    - 파일 탐색기 ✔️
+    - 파일 탐색기 ✔️ 0510
     - 단어 검색 기록 이용하여 단어장 만들기
     - 임의 단어 사전 검색 기능 (TextView로 사전에 검색 요청 보내기)
     - if next sentence starts with quotation mark pop next sentence and append to current sentence.
