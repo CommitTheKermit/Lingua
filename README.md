@@ -5,7 +5,7 @@
 - 개발 목적
 - 셀프 피드백
 - 기능 구현
-    -핵심 기능
+    - 핵심 기능
 - 설치 방법
 - 커밋 히스토리?
 
@@ -18,7 +18,8 @@
         프로토타입 : 2022.11 ~ 12.
         추가 수정  : 2023.05 ~ 
     주요 기능: 문장 단위 기계번역, 단어 검색 기능
-    사용 기술 및 도구: Android Studio Java, Django, MariaDB, MongoDB, AWS EC2
+    사용 기술 및 도구: Android Studio Java, 
+    <!-- Django, MariaDB, MongoDB, AWS EC2 -->
     문의: commit3921@gmail.com
 
 ## **기술 및 도구**
@@ -41,10 +42,10 @@
     - checkbox for papago translate
 
 ## **기능 구현**
-
+    
 
 ## **설치 방법**
-
+    Releases에 있는 .apk 파일을 안드로이드 휴대폰으로 이동 후 설치
 
 ## **커밋 히스토리**
 [레포지토리 커밋 히스토리](https://github.com/CommitTheKermit/Lingua/commits/main)
