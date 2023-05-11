@@ -36,7 +36,9 @@
     - if next sentence is equal to "'." extend that sentence to former sentence
     - save a indexthat last written
     - what about adding slide window?
-    - checkbox for papago translate
+    - checkbox for machine translate
+    - openAI machine translate
+    - Django, MariaDB, MongoDB, AWS EC2
 
 ## **기능 구현**
     
