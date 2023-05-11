@@ -38,7 +38,8 @@
     - what about adding slide window?
     - checkbox for machine translate
     - openAI machine translate
-    - Django, MariaDB, MongoDB, AWS EC2
+    - Django, MariaDB, MongoDB, AWS EC2\
+    - pdf to txt 변환 만들기
 
 ## **기능 구현**
     
