@@ -37,7 +37,7 @@
     - save a indexthat last written
     - what about adding slide window?
     - checkbox for machine translate
-    - openAI machine translate
+    - openAI machine translate ✔️ 0512
     - Django, MariaDB, MongoDB, AWS EC2\
     - pdf to txt 변환 만들기
 
