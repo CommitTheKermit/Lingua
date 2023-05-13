@@ -1,8 +1,12 @@
 package com.example.lingua.APIs;
 
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
 import com.example.lingua.Main.MainActivity;
+import com.example.lingua.Utils.Crypt;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -21,10 +25,12 @@ import org.json.JSONObject;
 
 
 public class OpenAI {
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public String getTranslation(String word) {
         String returnStr;
         try {
-            String apiKey = "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"; // OpenAI API 키 입력
+            String apiKey = Crypt.aes256Decode("98M767s8MGUIjRleEqIhYQ4OFYAlbrXXiBJNlz1rod38W7mCczFUt7J3aJqyb3LFUhpvbRv1vtDm661UELtksw==",
+                    "jMlHgXqcAykdNWvFtiPZUSoRbJzreOxE"); // OpenAI API 키 입력
             String textToTranslate = word.trim(); // 번역할 텍스트 입력
             String targetLanguage = "ko"; // 번역할 언어 코드 입력
 
@@ -72,6 +78,8 @@ public class OpenAI {
         }
         catch (JSONException e)
         {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return "-1";
