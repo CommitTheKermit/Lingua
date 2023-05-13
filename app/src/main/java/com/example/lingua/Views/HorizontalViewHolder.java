@@ -2,6 +2,7 @@ package com.example.lingua.Views;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lingua.APIs.OpenAI;
@@ -86,6 +88,7 @@ public class HorizontalViewHolder extends RecyclerView.ViewHolder {
                         if(isTranslated == false) {
                             tvWordContent = (TextView) wordDialogView.findViewById(R.id.tvWordContent);
                             new Thread() {
+                                @RequiresApi(api = Build.VERSION_CODES.O)
                                 @Override
                                 public void run() {
 
