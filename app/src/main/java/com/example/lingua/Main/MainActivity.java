@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -58,6 +60,10 @@ import com.example.lingua.R;
 import com.example.lingua.APIs.*;
 import com.example.lingua.Views.*;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class MainActivity extends AppCompatActivity {
     Activity main = this;
@@ -70,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     TextView txtOriginalText;
     TextView txtTitle;
     TextView tvIndexCurrent;
-    static TextView txtPapago;
+    static TextView txtMachineTranslated;
     EditText etTranslatedText;
 //    HorizontalScrollView scrollButtons;
     Dialog dialogView;
@@ -103,10 +109,6 @@ public class MainActivity extends AppCompatActivity {
     public static HashMap<String, String> mapWords = new HashMap<>();
     public static HashMap<String, String> mapWordsTranslated = new HashMap<>();
 
-    static String filePath;
-
-
-
     //메뉴 버튼 띄우기 위한 함수
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -118,146 +120,165 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode() == RESULT_OK) {
-                        Intent intent = result.getData();
-                        Uri uri = intent.getData();
-                        filePath = uri.getPath();
-                        filePath = filePath.substring(14, filePath.length());
-                        Log.d("kermit","uri");
-                        Log.d("kermit","filepath = " + filePath);
-                        try{
-                            File file = new File(filePath);
-                            InputStream in = new FileInputStream(file);
-    //                    InputStream in = getResources().openRawResource(R.raw.severed);
-                            byte[] b = new byte[in.available()];
+    private static final int PICK_PDF_FILE = 1;
+    private void openFile(Uri pickerInitialUri) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
 
-                            try {
-                                in.read(b);
-                            } catch (IOException e) {
-                                Log.d("kermit",e.getMessage());
-                            }
-                            sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.\n]")));
+        // Optionally, specify a URI for the file that should appear in the
+        // system file picker when it loads.
+        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
 
-                            InputStream inStopWord = getResources().openRawResource(R.raw.stop);
-                            byte[] bytesStopWord = new byte[inStopWord.available()];
+//        activityResultLauncher.launch(intent);
+        startActivityForResult(intent, PICK_PDF_FILE);
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-                            try {
-                                inStopWord.read(bytesStopWord);
-                            } catch (IOException e) {
-                                Log.d("kermit",e.getMessage());
-                            }
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Uri uri = data.getData();
+                Log.d("kermit", "uri");
+                try {
+                    InputStream in = getContentResolver().openInputStream(uri);
+                    //                    InputStream in = getResources().openRawResource(R.raw.severed);
+                    byte[] b = new byte[in.available()];
 
-                            Scanner scanStop = new Scanner(new String(bytesStopWord));
-                            while(scanStop.hasNext()){
-                                stopWordSet.add(scanStop.next());
-                            }
+                    try {
+                        in.read(b);
+                    } catch (IOException e) {
+                        Log.d("kermit", e.getMessage());
+                    }
+                    sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.\n]")));
 
-                            String temp;
-                            bookTitle = sentences.remove(0);
-                            for(int i = 0; i < sentences.size(); i++) {
-                                if (sentences.get(i).trim().length() == 0) {
-                                    sentences.remove(i);
-                                    i--;
+                    InputStream inStopWord = getResources().openRawResource(R.raw.stop);
+                    byte[] bytesStopWord = new byte[inStopWord.available()];
+
+                    try {
+                        inStopWord.read(bytesStopWord);
+                    } catch (IOException e) {
+                        Log.d("kermit", e.getMessage());
+                    }
+
+                    Scanner scanStop = new Scanner(new String(bytesStopWord));
+                    while (scanStop.hasNext()) {
+                        stopWordSet.add(scanStop.next());
+                    }
+
+                    String temp;
+                    String[] pathSegment = uri.getPath().split("/");
+                    bookTitle = pathSegment[pathSegment.length - 1].split("\\.")[0];
+                    for (int i = 0; i < sentences.size(); i++) {
+                        if (sentences.get(i).trim().length() == 0) {
+                            sentences.remove(i);
+                            i--;
+                            continue;
+                        }
+                        temp = sentences.get(i).trim();
+                        sentences.remove(i);
+                        sentences.add(i, temp);
+                    }
+                    resultWords = new String[sentences.size()];
+                    txtTitle.setText(bookTitle);
+
+                    try {
+                        File storage = context.getCacheDir();
+                        String fileName = "lingua_cache_" + bookTitle + ".json";
+
+                        File tempFile = new File(storage, fileName);
+                        if(tempFile.exists()){
+                            in = new FileInputStream(tempFile);
+                            b = new byte[in.available()];
+
+                            in.read(b);
+                            in.close();
+
+                            String json = new String(b, "UTF-8");
+                            JSONObject jsonObject = new JSONObject(json);
+
+                            index = (int)jsonObject.get("lastIndex");
+                            in.close();
+
+                            String originalSentence = sentences.get(index) + ".";
+                            txtOriginalText.setText(originalSentence);
+                            Log.d("kermit",originalSentence + "   index : " + index);
+
+                            int maxIndex = sentences.size() - 1;
+                            tvIndexCurrent.setText(index + " / " + maxIndex );
+                            etTranslatedText.setText("");
+
+                            if(resultWords[index] != null)
+                                etTranslatedText.setText(resultWords[index]);
+
+                            //기계 번역부분 start();까지 주석처리하면 번역기능 정지
+                            new Thread(){
+                                @Override
+                                public void run() {
+                                    String resultSentence;
+                                    OpenAI openAI = new OpenAI();
+                                    resultSentence = openAI.getTranslation(originalSentence);
+
+                                    Bundle setTextBundle = new Bundle();
+                                    Log.d("kermit", "resultSentence" + resultSentence);
+
+                                    setTextBundle.putString("resultSentence",resultSentence);
+                                    Message msg = setTextHandler.obtainMessage();
+                                    msg.setData(setTextBundle);
+                                    setTextHandler.sendMessage(msg);
+
+                                    Log.d("kermit", "msg" + msg);
+                                }
+                            }.start();
+
+                            listWords.clear();
+                            horizontalAdapter.clear();
+
+                            for (String token : originalSentence.split("[^a-zA-Z_\\-0-9]+")) {
+                                originalWord = token.toLowerCase();
+                                if(stopWordSet.contains(originalWord) || originalWord.length() == 0){
                                     continue;
                                 }
-                                temp = sentences.get(i).trim();
-                                sentences.remove(i);
-                                sentences.add(i, temp);
+                                MainActivity.listWords.add(new ButtonData(originalWord));
+                                MainActivity.horizontalAdapter.setData(MainActivity.listWords);
+                                MainActivity.recyclerWords.setAdapter(MainActivity.horizontalAdapter);
                             }
-                            resultWords = new String[sentences.size()];
-                            txtTitle.setText(bookTitle);
+                        }
+                        else{
                             txtOriginalText.setText("시작");
                             index = -1;
-    //                    btnInsert.setEnabled(false);
-    //                    btnPreviousLine.setEnabled(false);
-    //                Log.d("kermit",sentences.get(i).trim() + "   length : " + sentences.get(i).length());
-
-                            in.close();
-                            inStopWord.close();
                         }
-                        catch (IOException e) {
-                            Log.d("kermit",e.getMessage());
-                        }
+                    } catch (IOException e) {
+                        Log.d("kermit", e.getMessage());
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
                     }
+
+
+
+
+
+                    in.close();
+                    inStopWord.close();
+                } catch (IOException e) {
+                    Log.d("kermit", e.getMessage());
                 }
+            } else if (requestCode == 1) {
+
             }
-    );
+        }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.itemReadFile:
 
-                    Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath()
-                            + "/Download/");
+                    File filePath = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+                    Uri uri = Uri.parse(filePath.getPath());
+                    openFile(uri);
 
-                    Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-                    chooseFile.setDataAndType(uri, "text/plain");
-                    chooseFile = Intent.createChooser(chooseFile, "Choose a file");
-//                    chooseFile.setAction(Intent.ACTION_PICK);
-//                    startActivity(chooseFile);
-                    activityResultLauncher.launch(chooseFile);
-//                    File file = new File(filePath);
-//                    FileInputStream in = new FileInputStream(file);
-////                    InputStream in = getResources().openRawResource(R.raw.severed);
-//                    byte[] b = new byte[in.available()];
-//
-//                    try {
-//                        in.read(b);
-//                    } catch (IOException e) {
-//                        Log.d("kermit",e.getMessage());
-//                    }
-//                    sentences = new ArrayList<String>(Arrays.asList((new String(b)).split("[.\n]")));
-//
-//                    InputStream inStopWord = getResources().openRawResource(R.raw.stop);
-//                    byte[] bytesStopWord = new byte[inStopWord.available()];
-//
-//                    try {
-//                        inStopWord.read(bytesStopWord);
-//                    } catch (IOException e) {
-//                        Log.d("kermit",e.getMessage());
-//                    }
-//
-//                    Scanner scanStop = new Scanner(new String(bytesStopWord));
-//                    while(scanStop.hasNext()){
-//                        stopWordSet.add(scanStop.next());
-//                    }
-//
-//                    String temp;
-//                    bookTitle = sentences.remove(0);
-//                    for(int i = 0; i < sentences.size(); i++) {
-//                        if (sentences.get(i).trim().length() == 0) {
-//                            sentences.remove(i);
-//                            i--;
-//                            continue;
-//                        }
-//
-//
-//                        temp = sentences.get(i).trim();
-//                        sentences.remove(i);
-//                        sentences.add(i, temp);
-//                    }
-//                    resultWords = new String[sentences.size()];
-//                    txtTitle.setText(bookTitle);
-//                    txtOriginalText.setText("시작");
-//                    index = -1;
-////                    btnInsert.setEnabled(false);
-////                    btnPreviousLine.setEnabled(false);
-//
-////                Log.d("kermit",sentences.get(i).trim() + "   length : " + sentences.get(i).length());
-//
-//
-//                    in.close();
-//                    inStopWord.close();
-//                }
-//                catch (IOException e) {
-//                    Log.d("kermit",e.getMessage());
-//                }
                     break;
             case R.id.itemWriteFile:
 
@@ -357,19 +378,17 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
 
-                                Papago papago = new Papago();
                                 String resultSentence;
+                                OpenAI openAI = new OpenAI();
+                                resultSentence = openAI.getTranslation(originalSentence);
 
-                                resultSentence= papago.getTranslation(originalSentence,"en","ko");
-
-                                Bundle papagoBundle = new Bundle();
+                                Bundle setTextBundle = new Bundle();
                                 Log.d("kermit", "resultSentence" + resultSentence);
 
-
-                                papagoBundle.putString("resultSentence",resultSentence);
-                                Message msg = papago_handler.obtainMessage();
-                                msg.setData(papagoBundle);
-                                papago_handler.sendMessage(msg);
+                                setTextBundle.putString("resultSentence",resultSentence);
+                                Message msg = setTextHandler.obtainMessage();
+                                msg.setData(setTextBundle);
+                                setTextHandler.sendMessage(msg);
 
                                 Log.d("kermit", "msg" + msg);
                             }
@@ -434,8 +453,8 @@ public class MainActivity extends AppCompatActivity {
                         1000);
             }
         }
-        context = this;
 
+        context = this;
         mHandler = new Handler() ;
 
         actionBar = getSupportActionBar();
@@ -451,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
         txtOriginalText = (TextView) findViewById(R.id.txtOriginalText);
         etTranslatedText = (EditText) findViewById(R.id.etTranslatedText);
         txtTitle = (TextView) findViewById(R.id.txtTitle);
-        txtPapago = (TextView) findViewById(R.id.txtPapago);
+        txtMachineTranslated = (TextView) findViewById(R.id.txtMachineTranslated);
         tvIndexCurrent = (TextView) findViewById(R.id.tvIndexCurrent);
 //        scrollButtons = (LinearLayout) findViewById(R.id.scrollButtons);
 //        tvWordDefinitions = (TextView) findViewById(R.id.tvWordDefinitions);
@@ -632,19 +651,17 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(){
                     @Override
                     public void run() {
-
-                        Papago papago = new Papago();
                         String resultSentence;
+                        OpenAI openAI = new OpenAI();
+                        resultSentence = openAI.getTranslation(originalSentence);
 
-                        resultSentence= papago.getTranslation(originalSentence,"en","ko");
-
-                        Bundle papagoBundle = new Bundle();
+                        Bundle setTextBundle = new Bundle();
                         Log.d("kermit", "resultSentence" + resultSentence);
 
-                        papagoBundle.putString("resultSentence",resultSentence);
-                        Message msg = papago_handler.obtainMessage();
-                        msg.setData(papagoBundle);
-                        papago_handler.sendMessage(msg);
+                        setTextBundle.putString("resultSentence",resultSentence);
+                        Message msg = setTextHandler.obtainMessage();
+                        msg.setData(setTextBundle);
+                        setTextHandler.sendMessage(msg);
 
                         Log.d("kermit", "msg" + msg);
                     }
@@ -698,19 +715,17 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        Papago papago = new Papago();
                         String resultSentence;
+                        OpenAI openAI = new OpenAI();
+                        resultSentence = openAI.getTranslation(originalSentence);
 
-                        resultSentence= papago.getTranslation(originalSentence,"en","ko");
-
-                        Bundle papagoBundle = new Bundle();
+                        Bundle setTextBundle = new Bundle();
                         Log.d("kermit", "resultSentence" + resultSentence);
 
-
-                        papagoBundle.putString("resultSentence",resultSentence);
-                        Message msg = papago_handler.obtainMessage();
-                        msg.setData(papagoBundle);
-                        papago_handler.sendMessage(msg);
+                        setTextBundle.putString("resultSentence",resultSentence);
+                        Message msg = setTextHandler.obtainMessage();
+                        msg.setData(setTextBundle);
+                        setTextHandler.sendMessage(msg);
 
                         Log.d("kermit", "msg" + msg);
                     }
@@ -727,8 +742,6 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     MainActivity.listWords.add(new ButtonData(originalWord));
-
-
                     MainActivity.horizontalAdapter.setData(MainActivity.listWords);
                     MainActivity.recyclerWords.setAdapter(MainActivity.horizontalAdapter);
 
@@ -749,25 +762,61 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    private long backpressedTime = 0;
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() > backpressedTime + 2000) {
+            backpressedTime = System.currentTimeMillis();
+            Toast.makeText(this, "한번 더 눌러 종료.", Toast.LENGTH_SHORT).show();
+        } else if (System.currentTimeMillis() <= backpressedTime + 2000) {
+            finish();
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        File storage = context.getCacheDir();
+        String fileName = "lingua_cache_" + bookTitle + ".json";
+
+        try {
+            File tempFile = new File(storage, fileName);
+            tempFile.createNewFile();
+
+            JSONObject json = new JSONObject();
+            json.put("lastIndex", index);
+
+            FileOutputStream outputStream = new FileOutputStream(tempFile);
+
+            outputStream.write(json.toString().getBytes());
+            outputStream.close();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     @SuppressLint("HandlerLeak")
-    static Handler papago_handler = new Handler(){
+    static Handler setTextHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             Bundle bundle = msg.getData();
             String resultSentence = bundle.getString("resultSentence");
-            txtPapago.setText(resultSentence);
+            txtMachineTranslated.setText(resultSentence);
         }
     };
 
-    @SuppressLint("HandlerLeak")
-    Handler papagoWordHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            Bundle bundle = msg.getData();
-            String resultWord = bundle.getString("resultWord");
-        }
-    };
+//    @SuppressLint("HandlerLeak")
+//    Handler papagoWordHandler = new Handler(){
+//        @Override
+//        public void handleMessage(Message msg) {
+//            Bundle bundle = msg.getData();
+//            String resultWord = bundle.getString("resultWord");
+//        }
+//    };
 
 
 //    class WordTranslateThread extends Thread {

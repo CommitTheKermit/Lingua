@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.lingua.APIs.OpenAI;
 import com.example.lingua.Main.MainActivity;
 import com.example.lingua.APIs.NetworkTask;
 import com.example.lingua.APIs.Papago;
@@ -102,18 +103,20 @@ public class HorizontalViewHolder extends RecyclerView.ViewHolder {
                                         originalSentence += str + " <>";
                                     }
 
-                                    resultSentence = papago.getTranslation(originalSentence, "en", "ko");
+                                    OpenAI openAI = new OpenAI();
+                                    resultSentence = openAI.getTranslation(originalSentence);
 
-                                    Bundle papagoBundle = new Bundle();
+                                    Bundle setTextBundle = new Bundle();
                                     Log.d("kermit", "resultSentence" + resultSentence);
 
-
-                                    papagoBundle.putString("resultSentence", resultSentence);
-                                    Message msg = papago_handler.obtainMessage();
-                                    msg.setData(papagoBundle);
-                                    papago_handler.sendMessage(msg);
+                                    setTextBundle.putString("resultSentence",resultSentence);
+                                    Message msg = setTextHandler.obtainMessage();
+                                    msg.setData(setTextBundle);
+                                    setTextHandler.sendMessage(msg);
 
                                     Log.d("kermit", "msg" + msg);
+
+
 
                                 }
                             }.start();
@@ -139,7 +142,7 @@ public class HorizontalViewHolder extends RecyclerView.ViewHolder {
 //        this.btnWordDict = btn;
 //    }
     @SuppressLint("HandlerLeak")
-    Handler papago_handler = new Handler(){
+    Handler setTextHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             Bundle bundle = msg.getData();
