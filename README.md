@@ -28,16 +28,16 @@
 
 ## **셀프 피드백**
     - 파일 탐색기 ✔️ 0510
+    - openAI machine translate ✔️ 0512
+    - save a index that last written ✔️ 0513
     - 단어 검색 기록 이용하여 단어장 만들기
     - 임의 단어 사전 검색 기능 (TextView로 사전에 검색 요청 보내기)
     - if next sentence starts with quotation mark pop next sentence and append to current sentence.
     - application life cycle onPause or onDestory save the current index number and load last saved index number
     - make original text ui bigger, translated text ui smaller
     - if next sentence is equal to "'." extend that sentence to former sentence
-    - save a indexthat last written
     - what about adding slide window?
     - checkbox for machine translate
-    - openAI machine translate ✔️ 0512
     - Django, MariaDB, MongoDB, AWS EC2\
     - pdf to txt 변환 만들기
 
