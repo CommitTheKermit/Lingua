@@ -47,8 +47,6 @@ public class HorizontalViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 originalWord = btnWordDict.getText().toString();
 
-//                wordDialogView.show();
-
                 Button btnWordTranslate, btnWordConfirm;
                 TextView tvWordTitle;
 
@@ -75,8 +73,6 @@ public class HorizontalViewHolder extends RecyclerView.ViewHolder {
                     wordDialogView.show();
                 }
 
-//                tvWordContent.setText(MainActivity.mapWords.get(originalWord));
-//                tvWordContent.setText(MainActivity.mapWords.get(originalWord));
 
                 btnWordConfirm.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -93,14 +89,12 @@ public class HorizontalViewHolder extends RecyclerView.ViewHolder {
                                 @Override
                                 public void run() {
 
-                                    Papago papago = new Papago();
                                     String resultSentence;
-
-
                                     String[] temp = tvWordContent.getText().toString().split("\\n\\n");
                                     String originalSentence = "";
+                                    int count = 1;
                                     for (String str : temp) {
-                                        originalSentence += str + " <>";
+                                        originalSentence += count++ + ". " + str;
                                     }
 
                                     OpenAI openAI = new OpenAI();
@@ -115,32 +109,18 @@ public class HorizontalViewHolder extends RecyclerView.ViewHolder {
                                     setTextHandler.sendMessage(msg);
 
                                     Log.d("kermit", "msg" + msg);
-
-
-
                                 }
                             }.start();
                         }
                         else{
                             Toast.makeText(wordDialogView.getContext(),
                                     "이미 번역되었습니다.", Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });
             }
         });
-
-
     }
-//
-//    public Button getBtnWord(){
-//        return this.btnWordDict;
-//    }
-//
-//    public void setBtnWord(Button btn){
-//        this.btnWordDict = btn;
-//    }
     @SuppressLint("HandlerLeak")
     Handler setTextHandler = new Handler(){
         @Override

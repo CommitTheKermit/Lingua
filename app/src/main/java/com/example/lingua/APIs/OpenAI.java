@@ -24,7 +24,7 @@ public class OpenAI {
     public String getTranslation(String word) {
         String returnStr;
         try {
-            String apiKey = "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"; // OpenAI API 키 입력
+            String apiKey = "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"; // OpenAI API 키 입력
             String textToTranslate = word.trim(); // 번역할 텍스트 입력
             String targetLanguage = "ko"; // 번역할 언어 코드 입력
 
@@ -59,26 +59,8 @@ public class OpenAI {
                         .reduce((a, b) -> a + b).get();
             }
 
-//            System.out.println(new JSONObject(output).getJSONArray("choices").getJSONObject(0).getString("text"));
             returnStr = new JSONObject(output).getJSONArray("choices").getJSONObject(0).getString("text");
 
-            //            // API에 요청 보내기
-//            try (OutputStream os = conn.getOutputStream()) {
-//                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-//                os.write(input, 0, input.length);
-//            }
-//
-//            // API 응답 받기
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//            StringBuilder response = new StringBuilder();
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                response.append(line);
-//            }
-//            reader.close();
-
-//            // 응답 출력
-//            System.out.println(response.toString());
 
             // 연결 종료
             conn.disconnect();
